@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Super Simple Spark Core Controller</title>
+    <!--link href="css/style.css" rel="stylesheet"-->
+  </head>
+  <body>
+    <script type="text/javascript" src="http://codeorigin.jquery.com/jquery-2.0.3.min.js"></script>
+    <script>
+    $(document).ready(function() 
+	{
+        var baseURL = "https://api.spark.io/v1/devices/";
+        
+        var accessToken = "8cdc04bb432108a55009e382cda9120a92953940";
+        var coreID = "48ff70065067555033182287";
+        // App Heading
+        var appHeading = "Demo App";
+        // Function 1
+        var funcKey1 = "enable";
+        var args1 = "";
+		var funcKey2 = "disable";
+		var args2 = "";
+		//Pull data from the page
+		var temp = document.getElementById('ctemp').value;
+		var newtemp = document.getElementById('wtemp').value;
+
+        // Update app heading
+        $("#app-heading").html(appHeading);
+
+
+        // On method success
+        function onMethodSuccess() 
+		{
+        }
+
+        function onMethodFailure(data) 
+		{
+        }
+
+        // The base level run method command
+        function doMethod(method, data) 
+		{
+          var url = baseURL + coreID + "/" + method;
+          $.ajax({
+            type: "POST",
+            url: url,
+            data: 
+			{
+              access_token: accessToken,
+              args: data
+            },
+            dataType: "json"
+          }).success(function(obj) {
+            console.log(obj);
+            (obj.return_value && obj.return_value == 200) ? onMethodSuccess() : onMethodFailure((obj.error)?obj.error:"");
+			}).fail(function(obj) 
+		  {
+				onMethodFailure();
+          });
+        }
+
+		$("#submit").on("click", function () 
+		{
+			temp = document.getElementById('ctemp').value;
+			newtemp = document.getElementById('wtemp').value;
+			if(temp > newtemp)
+			{
+				console.log("In enable");
+				doMethod(funcKey1, args1);
+			}
+			else if(temp <= newtemp)
+			{
+				console.log("In disable");
+				doMethod(funcKey2, args2);
+			}
+		});
+	});
+	</script> 
+		<form>
+			Current Temperature: <input type="number" id="ctemp" name="currenttemp"><br>
+			Wanted Temperature:	<input type="number" id="wtemp" name="wantedtemp"><br>
+			<button type="button" id="submit">SUBMIT</button><br><br>
+		</form>
+		
+        
+	</body>
+</html>
